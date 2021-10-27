@@ -1,0 +1,18 @@
+﻿@model NoBull.Models.ViewModels.BlogCommentsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>BlogCommentsViewModel</h4>
+    <hr />
+    <dl class="row">
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new {  id = Model.Comments }) |
+    <a asp-action="MyBlog">Back to List</a>
+</div>
