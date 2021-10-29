@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using NoBull.Repositories;
-using NoBull.Models.ViewModels;
 using NoBull.Models;
 using NoBull.Utils;
 
@@ -16,11 +15,13 @@ namespace NoBull.Controllers
     {
         private readonly IBlogRepository _blogRepository;
         private readonly IUserProfileRepository _userProfileRepository;
+        private readonly ICommentRepository _commentRepository;
 
-        public BlogController(IBlogRepository blogRepository, IUserProfileRepository userProfileRepository)
+        public BlogController(IBlogRepository blogRepository, IUserProfileRepository userProfileRepository, ICommentRepository commentRepository)
         {
             _blogRepository = blogRepository;
             _userProfileRepository = userProfileRepository;
+            _commentRepository = commentRepository;
         }
 
         // GET: BlogController
@@ -39,7 +40,7 @@ namespace NoBull.Controllers
         // GET: BlogController/Details/5
         public ActionResult Details(int id)
         {
-            var blog = _blogRepository.GetPublishedBlogById(id);
+            var blog = _blogRepository.GetBlogByIdWithComments(id);
             if (blog == null)
             {
                 int userId = GetCurrentUserProfileId();
@@ -49,34 +50,32 @@ namespace NoBull.Controllers
                     return NotFound();
                 }
             }
-            List<Comment> comments = _blogRepository.GetCommentsByBlogId(id);
-            var vm = new BlogCommentsViewModel()
-            {
-                Blog = blog,
-                Comments = comments,
-            };
-
-            return View(vm);
+            return View(blog);
         }
 
         // GET: BlogController/Create
         public ActionResult Create()
         {
+            
             return View();
         }
 
         // POST: BlogController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Blog blog)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                blog.CreateDateTime = DateTime.Now;
+                blog.UserProfileId = GetCurrentUserProfileId();
+                _blogRepository.Add(blog);
+
+                return RedirectToAction("MyBlog");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(blog);
             }
         }
 
@@ -95,15 +94,17 @@ namespace NoBull.Controllers
         // POST: BlogController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Blog blog)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                blog.UserProfileId = GetCurrentUserProfileId();
+                _blogRepository.UpdateBlog(blog);
+                return RedirectToAction("MyBlog");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(blog);
             }
         }
 

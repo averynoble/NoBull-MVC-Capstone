@@ -14,6 +14,6 @@ namespace NoBull.Models
         public DateTime PublishedDateTime { get; set; }
         public int UserProfileId { get; set; }
         public UserProfile UserProfile { get; set; }
-        public int CommentId { get; set; }
+        public List<Comment> Comments { get; set; }
     }
 }

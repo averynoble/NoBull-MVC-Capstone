@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Linq;
 using System;
-using NoBull.Models.ViewModels;
 using NoBull.Repositories;
 using NoBull.Models;
 using NoBull.Utils;
@@ -43,14 +42,8 @@ namespace NoBull.Controllers
                     return NotFound();
                 }
             }
-            List<Comment> comments = _blogRepository.GetCommentsByBlogId(id);
-            var vm = new BlogCommentsViewModel()
-            {
-                Blog = blog,
-                Comments = comments,
-            };
 
-            return View(vm);
+            return View(blog);
         }
 
         // GET: CommentController/Create

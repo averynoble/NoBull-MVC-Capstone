@@ -14,7 +14,6 @@ namespace NoBull.Utils
             }
             return reader.GetString(ordinal);
         }
-
         public static DateTime? GetNullableDateTime(SqlDataReader reader, string column)
         {
             var ordinal = reader.GetOrdinal(column);
@@ -25,10 +24,19 @@ namespace NoBull.Utils
 
             return reader.GetDateTime(ordinal);
         }
-
         public static object ValueOrDBNull(object value)
         {
             return value ?? DBNull.Value;
+        }
+
+        public static bool IsDbNull(SqlDataReader reader, string column)
+        {
+            return reader.IsDBNull(reader.GetOrdinal(column));
+        }
+
+        public static bool IsNotDbNull(SqlDataReader reader, string column)
+        {
+            return !IsDbNull(reader, column);
         }
     }
 }

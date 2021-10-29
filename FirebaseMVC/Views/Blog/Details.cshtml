@@ -1,18 +1,42 @@
-﻿@model NoBull.Models.ViewModels.BlogCommentsViewModel
+﻿@model NoBull.Models.Blog
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h3>Details</h3>
 
 <div>
-    <h4>BlogCommentsViewModel</h4>
     <hr />
     <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Content)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Content)
+        </dd>
+        <dt class = "col-sm-2">
+            Created On:
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreateDateTime)
+        </dd>
     </dl>
 </div>
+<ul>
+    @foreach (var item in Model.Comments)
+            {
+                <li>@item.Content</li>
+                <li>@item.CreateDateTime</li>
+                <li>@item.UserProfile.UserName</li>
+            }
+</ul>
 <div>
-    @Html.ActionLink("Edit", "Edit", new {  id = Model.Comments }) |
     <a asp-action="MyBlog">Back to List</a>
 </div>

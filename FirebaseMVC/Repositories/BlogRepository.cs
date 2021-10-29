@@ -43,6 +43,127 @@ namespace NoBull.Repositories
             }
         }
 
+        public List<Blog> GetAllWithComments()
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            SELECT b.Id AS BlogId, b.Title, b.Content, b.UserProfileId AS BlogUserProfileId,
+                                       b.CreateDateTime AS BlogDateCreated, up.Id, up.UserName, 
+                                       c.Id, c.Content, c.UserProfileId, cup.UserName AS CommenterName
+                            FROM Blog b
+                                 LEFT JOIN UserProfile up ON b.UserProfileId = up.Id
+                                 LEFT JOIN Comment c ON c.BlogId = b.id
+                                 LEFT JOIN UserProfile cup ON cup.Id = c.UserProfileId
+                            ORDER BY b.CreateDateTime DESC";
+
+                    var reader = cmd.ExecuteReader();
+                    var blogs = new List<Blog>();
+                    while (reader.Read())
+                    {
+                        var blogId = reader.GetInt32(reader.GetOrdinal("BlogId"));
+
+                        var existingBlog = blogs.FirstOrDefault(p => p.Id == blogId);
+                        if (existingBlog == null)
+                        {
+                            existingBlog = new Blog()
+                            {
+                                Id = blogId,
+                                Title = reader.GetString(reader.GetOrdinal("Title")),
+                                Content = reader.GetString(reader.GetOrdinal("Content")),
+                                CreateDateTime = reader.GetDateTime(reader.GetOrdinal("BlogDateCreated")),
+                                UserProfileId = reader.GetInt32(reader.GetOrdinal("BlogUserProfileId")),
+                                UserProfile = new UserProfile()
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("BlogUserProfileId")),
+                                    UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                                },
+
+                                Comments = new List<Comment>()
+                            };
+                            blogs.Add(existingBlog);
+                        }
+
+                        if (DbUtils.IsNotDbNull(reader, "CommenterName"))
+                        {
+                            existingBlog.Comments.Add(new Comment()
+                            {
+                                Content = reader.GetString(reader.GetOrdinal("Content")),
+                                UserProfile = new UserProfile()
+                                {
+                                    UserName = reader.GetString(reader.GetOrdinal("CommenterName"))
+                                },
+                            });
+                        }
+                    }
+                    reader.Close();
+                    return blogs;
+                }
+            }
+        }
+
+        public Blog GetBlogByIdWithComments(int id)
+        {
+            using (var conn = Connection)
+            {
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                             SELECT b.Id AS BlogId, b.Title, b.Content, b.CreateDateTime AS BlogDateCreated,
+                                    b.UserProfileId AS BlogUserProfileId, c.Id AS CommentId, c.CreateDateTime,
+                                    c.UserProfileId AS CommentUserProfileId, c.Content AS CommentContent, 
+                                    up.UserName AS BlogAuthor, cup.UserName
+
+                             FROM Blog b
+                                    LEFT JOIN UserProfile up ON b.UserProfileId = up.Id
+                                    LEFT JOIN Comment c ON c.BlogId = b.Id
+                                    LEFT JOIN UserProfile cup ON cup.Id = c.UserProfileId
+                             WHERE b.Id = @Id";
+
+                    cmd.Parameters.AddWithValue("Id", id);
+                    var reader = cmd.ExecuteReader();
+
+                    Blog blog = null;
+                    if (reader.Read())
+                    {
+                        blog = new Blog()
+                        {
+                            Id = id,
+                            Title = reader.GetString(reader.GetOrdinal("Title")),
+                            Content = reader.GetString(reader.GetOrdinal("Content")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("BlogDateCreated")),
+                            UserProfileId = reader.GetInt32(reader.GetOrdinal("BlogUserProfileId")),
+                            UserProfile = new UserProfile()
+                            {
+                                UserName = reader.GetString(reader.GetOrdinal("BlogAuthor")),
+                            },
+                            Comments = new List<Comment>()
+                        };
+                    }
+                    if (DbUtils.IsNotDbNull(reader, "CommentId"))
+                    {
+                        blog.Comments.Add(new Comment()
+                        {
+                            Content = reader.GetString(reader.GetOrdinal("CommentContent")),
+                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                            UserProfileId = reader.GetInt32(reader.GetOrdinal("CommentUserProfileId")),
+                            UserProfile = new UserProfile()
+                            {
+                                UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                            }
+                        });
+                    }
+
+                    reader.Close();
+                    return blog;
+                }
+            }
+        }
+
         public Blog GetPublishedBlogById(int id)
         {
             using (SqlConnection conn = Connection)
@@ -217,7 +338,7 @@ namespace NoBull.Repositories
                             UPDATE Blog
                             SET
                                 Title = @title,
-                                Content = @content,
+                                Content = @content
                             WHERE Id = @id";
                     cmd.Parameters.AddWithValue("@id", blog.Id);
                     cmd.Parameters.AddWithValue("@title", blog.Title);
