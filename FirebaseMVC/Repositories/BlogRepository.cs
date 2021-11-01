@@ -128,34 +128,39 @@ namespace NoBull.Repositories
                     var reader = cmd.ExecuteReader();
 
                     Blog blog = null;
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        blog = new Blog()
+                        if (blog == null)
                         {
-                            Id = id,
-                            Title = reader.GetString(reader.GetOrdinal("Title")),
-                            Content = reader.GetString(reader.GetOrdinal("Content")),
-                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("BlogDateCreated")),
-                            UserProfileId = reader.GetInt32(reader.GetOrdinal("BlogUserProfileId")),
-                            UserProfile = new UserProfile()
+                            blog = new Blog()
                             {
-                                UserName = reader.GetString(reader.GetOrdinal("BlogAuthor")),
-                            },
-                            Comments = new List<Comment>()
-                        };
-                    }
-                    if (DbUtils.IsNotDbNull(reader, "CommentId"))
-                    {
-                        blog.Comments.Add(new Comment()
+                                Id = reader.GetInt32(reader.GetOrdinal("BlogId")),
+                                Title = reader.GetString(reader.GetOrdinal("Title")),
+                                Content = reader.GetString(reader.GetOrdinal("Content")),
+                                CreateDateTime = reader.GetDateTime(reader.GetOrdinal("BlogDateCreated")),
+                                UserProfileId = reader.GetInt32(reader.GetOrdinal("BlogUserProfileId")),
+                                UserProfile = new UserProfile()
+                                {
+                                    UserName = reader.GetString(reader.GetOrdinal("BlogAuthor")),
+                                },
+                                Comments = new List<Comment>()
+                            };
+                        }
+                        if (DbUtils.IsNotDbNull(reader, "CommentId"))
                         {
-                            Content = reader.GetString(reader.GetOrdinal("CommentContent")),
-                            CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
-                            UserProfileId = reader.GetInt32(reader.GetOrdinal("CommentUserProfileId")),
-                            UserProfile = new UserProfile()
+                            blog.Comments.Add(new Comment()
                             {
-                                UserName = reader.GetString(reader.GetOrdinal("UserName")),
-                            }
-                        });
+                                Id = reader.GetInt32(reader.GetOrdinal("CommentId")),
+                                Content = reader.GetString(reader.GetOrdinal("CommentContent")),
+                                CreateDateTime = reader.GetDateTime(reader.GetOrdinal("CreateDateTime")),
+                                BlogId = reader.GetInt32(reader.GetOrdinal("BlogId")),
+                                UserProfileId = reader.GetInt32(reader.GetOrdinal("CommentUserProfileId")),
+                                UserProfile = new UserProfile()
+                                {
+                                    UserName = reader.GetString(reader.GetOrdinal("UserName")),
+                                }
+                            });
+                        }
                     }
 
                     reader.Close();

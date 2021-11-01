@@ -12,6 +12,35 @@ namespace NoBull.Repositories
     {
         public CommentRepository(IConfiguration config) : base(config) { }
 
+        public List<Comment> GetCommentsByBlogId(int BlogId)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                            SELECT c.Id, c.Content, c.CreateDateTime, c.BlogId, up.UserName
+                            FROM Comment c
+                                    LEFT JOIN Blog b on b.Id = c.BlogId
+                                    LEFT JOIN UserProfile up on up.Id = c.UserProfileId
+                            WHERE c.BlogId = @BlogId
+                            ORDER BY c.CreateDateTime DESC";
+
+                    cmd.Parameters.AddWithValue("@BlogId", BlogId);
+                    var reader = cmd.ExecuteReader();
+
+                    var comments = new List<Comment>(BlogId);
+                    while (reader.Read())
+                    {
+                        comments.Add(NewCommentFromReader(reader));
+                    }
+                    reader.Close();
+                    return comments;
+                }
+            }
+        }
+
         public Comment GetCommentByBlogId(int id)
         {
             using (SqlConnection conn = Connection)
@@ -20,12 +49,10 @@ namespace NoBull.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                                    SELECT c.Id, c.Content, c.CreateDateTime, c.UserProfileId,
-                                           c.BlogId, up.Id, up.UserName, b.Id, b.UserProfileId, 
-                                           b.Title, b.CreateDateTime, b.Title, b.Content
+                                    SELECT c.Content, c.CreateDateTime,c.BlogId, up.UserName
                                     FROM Comment c
-                                            LEFT JOIN Blog b ON b.Id = c.BlogId
-                                            LEFT JOIN UserProfile up ON up.Id = c.UserProfileId
+                                        LEFT JOIN Blog b ON b.Id = c.BlogId
+                                        LEFT JOIN UserProfile up ON up.Id = c.UserProfileId
                                     WHERE c.BlogId = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);

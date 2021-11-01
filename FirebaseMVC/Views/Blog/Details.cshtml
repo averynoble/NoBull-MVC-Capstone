@@ -5,7 +5,9 @@
 }
 
 <h3>Details</h3>
-
+<div>
+    @Html.ActionLink("Add a comment", "Create", "Comment", new { id = Model.Id })
+</div>
 <div>
     <hr />
     <dl class="row">
@@ -32,9 +34,9 @@
 <ul>
     @foreach (var item in Model.Comments)
             {
-                <li>@item.Content</li>
-                <li>@item.CreateDateTime</li>
-                <li>@item.UserProfile.UserName</li>
+                <ul>@item.Content</ul>
+                <ul>@item.CreateDateTime</ul>
+                <ul>@item.UserProfile.UserName</ul>
             }
 </ul>
 <div>
