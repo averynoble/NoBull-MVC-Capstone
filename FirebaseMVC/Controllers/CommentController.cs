@@ -19,9 +19,9 @@ namespace NoBull.Controllers
 
         public CommentController(ICommentRepository commentRepository, IBlogRepository blogRepository, IUserProfileRepository userProfileRepository)
         {
-            commentRepository = _commentRepository;
-            blogRepository = _blogRepository;
-            userProfileRepository = _userProfileRepository;
+             _commentRepository = commentRepository;
+            _blogRepository = blogRepository;
+            _userProfileRepository = userProfileRepository;
         }
         // GET: CommentController
         public ActionResult Index()
@@ -30,13 +30,14 @@ namespace NoBull.Controllers
         }
 
         // GET: CommentController/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int id, int BlogId)
         {
             var blog = _blogRepository.GetPublishedBlogById(id);
             if (blog == null)
             {
                 int userId = GetCurrentUserProfileId();
                 blog = _blogRepository.GetUserBlogById(id, userId);
+                List<Comment> comments = _commentRepository.GetCommentsByBlogId(BlogId);
                 if (blog == null)
                 {
                     return NotFound();
@@ -47,23 +48,32 @@ namespace NoBull.Controllers
         }
 
         // GET: CommentController/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            return View();
+            Comment comment = new Comment()
+            {
+                BlogId = id,
+            };
+
+            return View(comment);
         }
 
         // POST: CommentController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Comment comment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                comment.CreateDateTime = DateTime.Now;
+                comment.UserProfileId = GetCurrentUserProfileId();
+                _commentRepository.Add(comment);
+
+                return RedirectToAction("Details", "Blog", new { id = comment.BlogId });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(comment);
             }
         }
 

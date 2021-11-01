@@ -1,4 +1,5 @@
 ﻿using NoBull.Models;
+using System.Collections.Generic;
 
 namespace NoBull.Repositories
 {
@@ -8,5 +9,6 @@ namespace NoBull.Repositories
         void DeleteComment(int id);
         Comment GetCommentByBlogId(int id);
         void UpdateComment(Comment comment);
+        List<Comment> GetCommentsByBlogId(int BlogId);
     }
 }
