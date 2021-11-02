@@ -41,7 +41,7 @@ namespace NoBull.Repositories
             }
         }
 
-        public Comment GetCommentByBlogId(int id)
+        public Comment GetCommentById(int id)
         {
             using (SqlConnection conn = Connection)
             {
@@ -49,11 +49,12 @@ namespace NoBull.Repositories
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                                    SELECT c.Content, c.CreateDateTime,c.BlogId, up.UserName
+                                    SELECT c.Id, c.Content, c.CreateDateTime,c.BlogId, up.UserName,
+                                           c.UserProfileId
                                     FROM Comment c
                                         LEFT JOIN Blog b ON b.Id = c.BlogId
                                         LEFT JOIN UserProfile up ON up.Id = c.UserProfileId
-                                    WHERE c.BlogId = @id";
+                                    WHERE c.Id = @id";
 
                     cmd.Parameters.AddWithValue("@id", id);
                     var reader = cmd.ExecuteReader();

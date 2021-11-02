@@ -80,42 +80,56 @@ namespace NoBull.Controllers
         // GET: CommentController/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            
+            var comment = _commentRepository.GetCommentById(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return View(comment);
         }
 
         // POST: CommentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Comment comment)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                
+                comment.UserProfileId = GetCurrentUserProfileId();
+                _commentRepository.UpdateComment(comment);
+
+                return RedirectToAction("Details", "Blog", new { id = comment.BlogId });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(comment);
             }
         }
 
         // GET: CommentController/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var comment = _commentRepository.GetCommentById(id);
+            return View(comment);
         }
 
         // POST: CommentController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Comment comment, Blog blog)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                comment = _commentRepository.GetCommentById(id);
+                _commentRepository.DeleteComment(id);
+                return RedirectToAction("Details", "Blog", new { id = comment.BlogId });
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return View(comment);
             }
         }
 

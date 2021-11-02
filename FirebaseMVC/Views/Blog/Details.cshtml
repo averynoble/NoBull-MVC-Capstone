@@ -1,5 +1,5 @@
 ﻿@model NoBull.Models.Blog
-
+@using System.Security.Claims;
 @{
     ViewData["Title"] = "Details";
 }
@@ -34,9 +34,19 @@
 <ul>
     @foreach (var item in Model.Comments)
             {
+                <br />
                 <ul>@item.Content</ul>
                 <ul>@item.CreateDateTime</ul>
                 <ul>@item.UserProfile.UserName</ul>
+                @if (item.UserProfileId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                 {
+                    <td>
+                        @Html.ActionLink("Edit Comment", "Edit", "Comment", new { id = item.Id }) |
+                        @Html.ActionLink("Delete Comment", "Delete", "Comment", new { id = item.Id })
+                        <br />
+                    </td>
+                    
+                 }
             }
 </ul>
 <div>
