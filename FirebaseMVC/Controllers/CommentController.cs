@@ -100,7 +100,6 @@ namespace NoBull.Controllers
                 
                 comment.UserProfileId = GetCurrentUserProfileId();
                 _commentRepository.UpdateComment(comment);
-
                 return RedirectToAction("Details", "Blog", new { id = comment.BlogId });
             }
             catch (Exception ex)

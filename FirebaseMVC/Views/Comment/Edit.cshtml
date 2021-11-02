@@ -16,6 +16,9 @@
                 <span asp-validation-for="Content" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <input asp-for="BlogId" type="hidden" />
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -23,7 +26,7 @@
 </div>
 
 <div>
-    <a asp-controller="Blog" asp-action="Details">Back to Blog</a>
+    <a asp-controller="Blog" asp-action="Details" asp-route-id="@Model.BlogId">Back to Blog</a>
 </div>
 
 @section Scripts {
