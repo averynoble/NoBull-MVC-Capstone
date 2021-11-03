@@ -54,10 +54,14 @@ namespace NoBull.Controllers
         }
 
         // GET: BlogController/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            
-            return View();
+            Blog blog = new Blog()
+            {
+                Id = id,
+            };
+
+            return View(blog);
         }
 
         // POST: BlogController/Create
@@ -71,7 +75,7 @@ namespace NoBull.Controllers
                 blog.UserProfileId = GetCurrentUserProfileId();
                 _blogRepository.Add(blog);
 
-                return RedirectToAction("MyBlog");
+                return RedirectToAction("MyBlog", "Blog", new { id = blog.Id });
             }
             catch (Exception ex)
             {

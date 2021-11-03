@@ -11,17 +11,21 @@ namespace NoBull.Controllers
     public class HomeController : Controller
     {
         private readonly IUserProfileRepository _userProfileRepository;
+        private readonly IBlogRepository _blogRepository;
+        private readonly ICommentRepository _commentRepository;
 
-        public HomeController(IUserProfileRepository userProfileRepository)
+        public HomeController(IUserProfileRepository userProfileRepository, ICommentRepository commentRepository, IBlogRepository blogRepository)
         {
             _userProfileRepository = userProfileRepository;
+            _blogRepository = blogRepository;
+            _commentRepository = commentRepository;
         }
 
         public IActionResult Index()
         {
-            var userProfileId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var userProfile = _userProfileRepository.GetUserById(userProfileId);
-            return View(userProfile);
+            
+            var blogs = _blogRepository.GetAllWithComments();
+            return View(blogs);
         }
 
         public IActionResult Privacy()
