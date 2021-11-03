@@ -1,9 +1,52 @@
-﻿@model NoBull.Models.UserProfile
+﻿@model IEnumerable<NoBull.Models.Blog>
+@using System.Security.Claims;
+
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <h2 class="dislay-4">Your email address is @Model.Email, but you probably knew that.</h2>
-</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Content)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDateTime)
+            </th>
+            <th>
+               Author
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+         {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserProfile.UserName)
+                </td>
+                    <td>
+                        @Html.ActionLink("View Comments", "Details", "Blog", new { id = item.Id }) 
+                        <br />
+                    </td>
+            </tr>
+         }
+    </tbody>
+</table>
+

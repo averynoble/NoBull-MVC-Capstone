@@ -53,7 +53,7 @@ namespace NoBull.Repositories
                     cmd.CommandText = @"
                             SELECT b.Id AS BlogId, b.Title, b.Content, b.UserProfileId AS BlogUserProfileId,
                                        b.CreateDateTime AS BlogDateCreated, up.Id, up.UserName, 
-                                       c.Id, c.Content, c.UserProfileId, cup.UserName AS CommenterName
+                                       c.Id AS CommentId, c.Content, c.UserProfileId, cup.UserName AS CommenterName
                             FROM Blog b
                                  LEFT JOIN UserProfile up ON b.UserProfileId = up.Id
                                  LEFT JOIN Comment c ON c.BlogId = b.id
@@ -87,11 +87,13 @@ namespace NoBull.Repositories
                             blogs.Add(existingBlog);
                         }
 
-                        if (DbUtils.IsNotDbNull(reader, "CommenterName"))
+                        if (DbUtils.IsNotDbNull(reader, "CommentId"))
                         {
                             existingBlog.Comments.Add(new Comment()
                             {
+                                Id = reader.GetInt32(reader.GetOrdinal("CommentId")),
                                 Content = reader.GetString(reader.GetOrdinal("Content")),
+                                BlogId = blogId,
                                 UserProfile = new UserProfile()
                                 {
                                     UserName = reader.GetString(reader.GetOrdinal("CommenterName"))
