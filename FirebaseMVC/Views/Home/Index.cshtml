@@ -5,48 +5,71 @@
     ViewData["Title"] = "Index";
 }
 
+@foreach (var item in Model)
+ {
+    <div class="card mb-3">
+      <h2 class="card-header text-white bg-primary">@Html.DisplayFor(modelItem => item.Title)</h2>            
+        <div class="card-body">
+            <p class="card-text">@Html.DisplayFor(modelItem => item.Content)</p>
+        </div>
+            
+        <div class="card-body">
+            <p class="card-text">Written By: @Html.DisplayFor(modelItem => item.UserProfile.UserName)</p>
+            <p class="card-text">@Html.DisplayFor(modelItem => item.CreateDateTime)</p>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreateDateTime)
-            </th>
-            <th>
-               Author
-            </th>
-            <th></th>
-        </tr>
-    </thead>
+        <div class="card-footer text-muted">
+            <p class="card-text">
+                @Html.ActionLink("View Comments", "Details", "Blog", new { id = item.Id })
+            </p>
+        </div>
+    </div>
+ }
 
-    <tbody>
-        @foreach (var item in Model)
-         {
+@*<div>
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreateDateTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserProfile.UserName)
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Content)
+                </th>
+                <th>
+                    Created On
+                </th>
+                <th>
+                    Author
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
                     <td>
-                        @Html.ActionLink("View Comments", "Details", "Blog", new { id = item.Id }) 
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Content)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreateDateTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserProfile.UserName)
+                    </td>
+                    <td>
+                        @Html.ActionLink("View Comments", "Details", "Blog", new { id = item.Id })
                         <br />
                     </td>
-            </tr>
-         }
-    </tbody>
-</table>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>*@
+        
 

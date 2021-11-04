@@ -6,7 +6,6 @@
 
 <h4>Are you sure you want to delete your comment?</h4>
 <div>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Content)
@@ -15,7 +14,7 @@
             @Html.DisplayFor(model => model.Content)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreateDateTime)
+            Created On:
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.CreateDateTime)
@@ -23,7 +22,7 @@
     </dl>
     
     <form asp-action="Delete">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-outline-danger" /> |
         <a asp-controller="Blog" asp-action="Details" asp-route-id="@Model.BlogId">Back to List</a>
     </form>
 </div>

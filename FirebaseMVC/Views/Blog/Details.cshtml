@@ -8,7 +8,56 @@
 <div>
     @Html.ActionLink("Add a comment", "Create", "Comment", new { id = Model.Id })
 </div>
+
+<br />
+<div class="card mb-3">
+    <h2 class="card-header text-white bg-primary">
+        @Html.DisplayFor(model => Model.Title)
+    </h2>
+
+    <div class="card-body">
+        <p class="card-text">@Html.DisplayFor(model => Model.Content)</p>
+        <p class="card-text">@Html.DisplayFor(model => model.CreateDateTime)</p>
+    </div>
+</div>
+
+@foreach (var item in Model.Comments)
+ {
+    <br />
+    <div class="card" style="max-width: 30rem;">
+        <div class="card-body">
+            <h4 class="card-title">@item.UserProfile.UserName</h4>
+            <h6 class="card-subtitle mb-2 text-muted">@item.CreateDateTime</h6>
+            <p class="card-text">@item.Content</p>
+            @if (item.UserProfileId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+             {
+                <a href="#" class="card-link">
+                    @Html.ActionLink("Edit Comment", "Edit", "Comment", new { id = item.Id }) 
+                    @Html.ActionLink("Delete Comment", "Delete", "Comment", new { id = item.Id })
+                </a>
+             }
+        </div>
+    </div>
+ }
+
 <div>
+    <br />
+    <a asp-action="MyBlog">Back to List</a>
+</div>
+
+    @*<ul>@item.Content</ul>
+    <ul>@item.CreateDateTime</ul>
+    <ul>@item.UserProfile.UserName</ul>
+    @if (item.UserProfileId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
+     {
+        <td>
+            @Html.ActionLink("Edit Comment", "Edit", "Comment", new { id = item.Id }) |
+            @Html.ActionLink("Delete Comment", "Delete", "Comment", new { id = item.Id })
+            <br />
+        </td>
+     }*@
+
+@*<div>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -30,24 +79,4 @@
             @Html.DisplayFor(model => model.CreateDateTime)
         </dd>
     </dl>
-</div>
-<ul>
-    @foreach (var item in Model.Comments)
-     {
-        <br />
-        <ul>@item.Content</ul>
-        <ul>@item.CreateDateTime</ul>
-        <ul>@item.UserProfile.UserName</ul>
-        @if (item.UserProfileId == int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)))
-         {
-            <td>
-                @Html.ActionLink("Edit Comment", "Edit", "Comment", new { id = item.Id }) |
-                @Html.ActionLink("Delete Comment", "Delete", "Comment", new { id = item.Id })
-                <br />
-            </td>
-         }
-     }
-</ul>
-<div>
-    <a asp-action="MyBlog">Back to List</a>
-</div>
+</div>*@
